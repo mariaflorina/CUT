@@ -1,0 +1,6 @@
+Scrieti un tool cut.py care sa imite comportamentul tool-ului cut din linux:
+https://man7.org/linux/man-pages/man1/cut.1.html
+Se vor considera doar input-urile primite prin sys.argv
+
+INPUT: Tot ce primeste la input cut
+OUTPUT: Tot ce primeste la output cut

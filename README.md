@@ -7,15 +7,15 @@
 
 ### Options
 - [X] --bytes (-b)
-- [] --characters
-- [] --delimiter
-- [] --fields
-- [] --complement
-- [] --only-delimited
-- [] --output-terminated
-- [] --help
-- [] --version
+- [ ] --characters
+- [ ] --delimiter
+- [ ] --fields
+- [ ] --complement
+- [ ] --only-delimited
+- [ ] --output-terminated
+- [ ] --help
+- [ ] --version
 
 ### Input strings
 - [X] Files
-- [] Standard Input
+- [ ] Standard Input

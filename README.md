@@ -7,9 +7,9 @@
 
 ### Options
 - ✔️ --bytes (-b)
-- ⬜ --characters
-- ⬜ --delimiter
-- ⬜ --fields
+- ✔️ --characters (-c)
+- ✔️ --delimiter (-d)
+- ✔️ --fields (-f)
 - ⬜ --complement
 - ⬜ --only-delimited
 - ⬜ --output-terminated

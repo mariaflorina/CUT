@@ -10,9 +10,10 @@
 - ✔️ --characters (-c)
 - ✔️ --delimiter (-d)
 - ✔️ --fields (-f)
-- ⬜ --complement
-- ⬜ --only-delimited
-- ⬜ --output-terminated
+- ✔️ --complement
+- ✔️ --only-delimited (-s)
+- ⬜ --output-delimiter
+- ⬜ --zero-terminated
 - ⬜ --help
 - ⬜ --version
 

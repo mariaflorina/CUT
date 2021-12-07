@@ -74,7 +74,6 @@ def process_command(command, delim, output_delim):
                 if nr_line > 0:
                     print(line, end="")
             nr_line += 1
-    # TODO:-z
 
 
 # -b, -c options

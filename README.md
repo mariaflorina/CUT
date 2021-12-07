@@ -19,4 +19,4 @@
 
 ### Input strings
 - ✔️ Files
-- ⬜ Standard Input
+- ✔️ Standard Input

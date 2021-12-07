@@ -12,10 +12,10 @@
 - ✔️ --fields (-f)
 - ✔️ --complement
 - ✔️ --only-delimited (-s)
-- ⬜ --output-delimiter
+- ✔️ --output-delimiter
 - ⬜ --zero-terminated
-- ⬜ --help
-- ⬜ --version
+- ✔️ --help
+- ✔️ --version
 
 ### Input strings
 - ✔️ Files

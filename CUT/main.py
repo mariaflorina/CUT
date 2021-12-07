@@ -45,23 +45,35 @@ def process_command(command, delim, output_delim):
     if len(files) != 0:
         for file in files:
             lines = read_file(file)
-            if "-b" in options or "--bytes" in options:
+            if "-z" in options or "--zero-terminated" in options:
+                z_command(command, lines, options, ranges, delim, output_delim)
+            elif "-b" in options or "--bytes" in options:
                 bytes_characters_command(command, lines, options, ranges)  # -b option
             elif "-c" in options or "--characters" in options:
                 bytes_characters_command(command, lines, options, ranges)  # -c option
             elif "-f" in options or "--fields" in options:
                 fields_command(command, lines, options, ranges, delim, output_delim)  # -f option
     else:
+        nr_line = 0
+        zero_terminated = False
         for line in stdin:
             # print(len(line))
             if line.rstrip() == '^C':
                 break
-            if "-b" in options or "--bytes" in options:
-                bytes_characters_command_line(command, line, options, ranges)  # -b option
-            elif "-c" in options or "--characters" in options:
-                bytes_characters_command_line(command, line, options, ranges)  # -c option
-            elif "-f" in options or "--fields" in options:
-                fields_command_line(command, line, options, ranges, delim, output_delim)  # -f option
+            if nr_line == 0 and "-z" in options or "--zero-terminated" in options:
+                z_command_line(command, line, options, ranges, delim, output_delim)
+                zero_terminated = True
+            if zero_terminated is False:
+                if "-b" in options or "--bytes" in options:
+                    bytes_characters_command_line(command, line, options, ranges)  # -b option
+                elif "-c" in options or "--characters" in options:
+                    bytes_characters_command_line(command, line, options, ranges)  # -c option
+                elif "-f" in options or "--fields" in options:
+                    fields_command_line(command, line, options, ranges, delim, output_delim)  # -f option
+            else:
+                if nr_line > 0:
+                    print(line, end="")
+            nr_line += 1
     # TODO:-z
 
 
@@ -215,6 +227,26 @@ def fields_command_line(command, line, options, ranges, delim, output_delim):
                 print(text)
 
 
+def z_command(command, lines, options, ranges, delim, output_delim):
+    if "-b" in options or "--bytes" in options:
+        bytes_characters_command_line(command, lines[0], options, ranges)  # -b option
+    elif "-c" in options or "--characters" in options:
+        bytes_characters_command_line(command, lines[0], options, ranges)  # -c option
+    elif "-f" in options or "--fields" in options:
+        fields_command_line(command, lines[0], options, ranges, delim, output_delim)  # -f option
+    for line in lines[1:]:
+        print(line)
+
+
+def z_command_line(command, line, options, ranges, delim, output_delim):
+    if "-b" in options or "--bytes" in options:
+        bytes_characters_command_line(command, line, options, ranges)  # -b option
+    elif "-c" in options or "--characters" in options:
+        bytes_characters_command_line(command, line, options, ranges)  # -c option
+    elif "-f" in options or "--fields" in options:
+        fields_command_line(command, line, options, ranges, delim, output_delim)  # -f option
+
+
 def help_command():
     f = open("help.txt", "r")
     print(f.read())
@@ -238,9 +270,9 @@ if com.find("-d") or com.find("--delimiter"):
         index_1 = com.find("\"", com.find("--output-delimiter"))
         output_delim = com[index_1 + 1]
 
-print("Delimiter:")
-print(delim)
-print("Output delimiter:")
-print(output_delim)
+# print("Delimiter:")
+# print(delim)
+# print("Output delimiter:")
+# print(output_delim)
 command = re.split('[ ,]', com)
 process_command(command, delim, output_delim)

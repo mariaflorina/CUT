@@ -56,6 +56,7 @@ DESCRIPTION
        N-M    from N'th to M'th (included) byte, character or field
 
        -M     from first to M'th (included) byte, character or field
+
 GNU coreutils online help:<https://www.gnu.org/software/coreutils/>
 Report any translation bugs to <https://translationproject.org/team/>
 Full documentation <https://www.gnu.org/software/coreutils/cut>

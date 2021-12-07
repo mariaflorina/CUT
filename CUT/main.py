@@ -26,7 +26,7 @@ def read_file(file_name):
 
 
 # execute the command
-def process_command(command, delim):
+def process_command(command, delim, output_delim):
     # validation = validate_command(command)
     files = [file for file in command if ".txt" in file]
     # print(files)
@@ -40,8 +40,12 @@ def process_command(command, delim):
     elif "-c" in options or "--characters" in options:
         bytes_characters_command(command, files, options, ranges)  # -c option
     elif "-f" in options or "--fields" in options:
-        fields_command(command, files, options, ranges, delim)  # -f option
-    # TODO:--output-delimiter and -z
+        fields_command(command, files, options, ranges, delim, output_delim)  # -f option
+    elif "--help" in options:
+        help_command()
+    elif "--version" in options:
+        version_command()
+    # TODO:-z
 
 
 # -b, -c options
@@ -75,7 +79,7 @@ def bytes_characters_command(command, files, options, ranges):
 
 
 # -f,-d options
-def fields_command(command, files, options, ranges, delim):
+def fields_command(command, files, options, ranges, delim, output_delim):
     for file in files:
         lines = read_file(file)
         if "-d" not in options and "--delimiter" not in options:
@@ -93,9 +97,10 @@ def fields_command(command, files, options, ranges, delim):
                         print(line)
                     else:
                         line_delimited = line.split(delim)
-                        line_delimited_1 = [x + delim for x in line_delimited]
+                        line_delimited_1 = [x + output_delim for x in line_delimited]
                         if "--complement" in options:
                             text = line
+                            text = text.replace(delim, output_delim)
                         else:
                             text = ""
                         for r in ranges:
@@ -110,23 +115,43 @@ def fields_command(command, files, options, ranges, delim):
                                 if "--complement" in options:
                                     text = text.replace("".join(line_delimited_1[a:b][:]), '')
                                 else:
-                                    text = text + delim.join(line_delimited[a:b][:])
+                                    text = text + output_delim.join(line_delimited[a:b][:])
                             else:
-                                if (int(r) - 1) < len(line_delimited):
+                                nr = int(r) - 1
+                                if nr < len(line_delimited):
                                     if "--complement" in options:
-                                        text = text.replace("".join(line_delimited_1[int(r) - 1][:]), '')
+                                        text = text.replace("".join(line_delimited_1[nr:nr + 1][:]), '')
                                     else:
-                                        text = text + "".join(line_delimited[int(r) - 1][:]) + delim
+                                        text = text + output_delim.join(line_delimited[nr:nr + 1][:])
                         print(text)
+
+
+def help_command():
+    f = open("help.txt", "r")
+    print(f.read())
+
+
+def version_command():
+    f = open("version.txt", "r")
+    print(f.read())
 
 
 print("Insert command:")
 com = str(input())
 # print(com)
 delim = ""
+output_delim = ""
 if com.find("-d") or com.find("--delimiter"):
     index = com.find("\"")
     delim = com[index + 1]
+    output_delim = delim
+    if com.find("--output-delimiter") != -1:
+        index_1 = com.find("\"", com.find("--output-delimiter"))
+        output_delim = com[index_1 + 1]
+
+# print("Delimiter:")
 # print(delim)
+# print("Output delimiter:")
+# print(output_delim)
 command = re.split('[ ,]', com)
-process_command(command, delim)
+process_command(command, delim, output_delim)

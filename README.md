@@ -4,7 +4,11 @@
 
 ### Validation
 - ✔️ Use one, and only one of -b, -c or -f.
-- ⬜ Other casses
+- ✔️ Invalid option
+- ✔️ Verify first word "cut"
+- ✔️ Verify that ranges are placed after options
+- ✔️ -b, -c or -f commands must not appear 2 times
+- ✔️ Verify if the files exist
 
 ### Options
 - ✔️ --bytes (-b)
@@ -14,7 +18,7 @@
 - ✔️ --complement
 - ✔️ --only-delimited (-s)
 - ✔️ --output-delimiter
-- ✔️ --zero-terminated
+- ✔️ --zero-terminated (-z)
 - ✔️ --help
 - ✔️ --version
 

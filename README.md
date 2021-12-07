@@ -4,6 +4,7 @@
 
 ### Validation
 - ✔️ Use one, and only one of -b, -c or -f.
+- ⬜ Other casses
 
 ### Options
 - ✔️ --bytes (-b)

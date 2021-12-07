@@ -14,7 +14,7 @@
 - ✔️ --complement
 - ✔️ --only-delimited (-s)
 - ✔️ --output-delimiter
-- ⬜ --zero-terminated
+- ✔️ --zero-terminated
 - ✔️ --help
 - ✔️ --version
 

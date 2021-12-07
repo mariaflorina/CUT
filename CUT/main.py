@@ -12,6 +12,16 @@ valid_options_range_check = [0, 0, 0]
 more_info = "Try 'cut --help' for more information."
 
 
+# there are not -b,-c,-f options
+def valid_option_primary_check(options):
+    if len(options) == 0:
+        return False
+    for option in options:
+        if option not in valid_options_range:
+            return False
+    return True
+
+
 # invalid option
 def valid_option_check(options):
     for option in options:
@@ -32,7 +42,7 @@ def numbers_after_options(command, options, ranges):
     for option in options:
         if option in valid_options_range:
             position = command.index(option)
-            if command[position + 1] not in ranges:
+            if position + 1 >= len(command) or command[position + 1] not in ranges:
                 return False
     return True
 
@@ -68,6 +78,9 @@ def validate_command(command, options, ranges, files):
     if cut_first_word(command) is not True:
         print(cut_first_word(command), end="")
         print(":command not found")
+        valid = False
+    elif valid_option_primary_check(options) is False:
+        print("cut: you must specify a list of bytes, characters or fields")
         valid = False
     elif valid_option_check(options) is not True:
         print("cut: invalid option -- \'" + valid_option_check(options) + "\'")

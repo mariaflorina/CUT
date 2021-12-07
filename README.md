@@ -4,6 +4,7 @@
 
 ### Validation
 - ✔️ Use one, and only one of -b, -c or -f.
+- ⬜ Other casses
 
 ### Options
 - ✔️ --bytes (-b)
@@ -19,4 +20,4 @@
 
 ### Input strings
 - ✔️ Files
-- ⬜ Standard Input
+- ✔️ Standard Input

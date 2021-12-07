@@ -1,4 +1,6 @@
 import re
+from sys import stdin
+import numpy as np
 
 
 # verify that the command is valid
@@ -35,95 +37,182 @@ def process_command(command, delim, output_delim):
     ranges = [ran for ran in command if ran not in files and any(map(str.isdigit, ran))]
     # print(ranges)
 
-    if "-b" in options or "--bytes" in options:
-        bytes_characters_command(command, files, options, ranges)  # -b option
-    elif "-c" in options or "--characters" in options:
-        bytes_characters_command(command, files, options, ranges)  # -c option
-    elif "-f" in options or "--fields" in options:
-        fields_command(command, files, options, ranges, delim, output_delim)  # -f option
-    elif "--help" in options:
+    if "--help" in options:
         help_command()
     elif "--version" in options:
         version_command()
+
+    if len(files) != 0:
+        for file in files:
+            lines = read_file(file)
+            if "-b" in options or "--bytes" in options:
+                bytes_characters_command(command, lines, options, ranges)  # -b option
+            elif "-c" in options or "--characters" in options:
+                bytes_characters_command(command, lines, options, ranges)  # -c option
+            elif "-f" in options or "--fields" in options:
+                fields_command(command, lines, options, ranges, delim, output_delim)  # -f option
+    else:
+        for line in stdin:
+            # print(len(line))
+            if line.rstrip() == '^C':
+                break
+            if "-b" in options or "--bytes" in options:
+                bytes_characters_command_line(command, line, options, ranges)  # -b option
+            elif "-c" in options or "--characters" in options:
+                bytes_characters_command_line(command, line, options, ranges)  # -c option
+            elif "-f" in options or "--fields" in options:
+                fields_command_line(command, line, options, ranges, delim, output_delim)  # -f option
     # TODO:-z
 
 
 # -b, -c options
-def bytes_characters_command(command, files, options, ranges):
-    for file in files:
-        lines = read_file(file)
-        for line in lines:
-            if "--complement" in options:
-                text = line
-            else:
-                text = ""
-            for r in ranges:
-                if "-" in r:
-                    r_split = r.split("-")
-                    a = 0
-                    b = len(line)
-                    if r_split[0].isnumeric():
-                        a = int(r_split[0]) - 1
-                    if r_split[1].isnumeric():
-                        b = int(r_split[1])
-                    if "--complement" in options:
-                        text = text.replace(line[a:b][:], '')
-                    else:
-                        text = text + line[a:b][:]
+def bytes_characters_command(command, lines, options, ranges):
+    for line in lines:
+        if "--complement" in options:
+            text = line
+        else:
+            text = ""
+        for r in ranges:
+            if "-" in r:
+                r_split = r.split("-")
+                a = 0
+                b = len(line)
+                if r_split[0].isnumeric():
+                    a = int(r_split[0]) - 1
+                if r_split[1].isnumeric():
+                    b = int(r_split[1])
+                if "--complement" in options:
+                    text = text.replace(line[a:b][:], '')
                 else:
-                    if "--complement" in options:
-                        text = text.replace(line[int(r) - 1][:], '')
-                    else:
-                        text = text + line[int(r) - 1][:]
-            print(text)
+                    text = text + line[a:b][:]
+            else:
+                if "--complement" in options:
+                    text = text.replace(line[int(r) - 1][:], '')
+                else:
+                    text = text + line[int(r) - 1][:]
+        print(text)
+
+
+# -b, -c options
+def bytes_characters_command_line(command, line, options, ranges):
+    if "--complement" in options:
+        text = line
+    else:
+        text = ""
+    for r in ranges:
+        if "-" in r:
+            r_split = r.split("-")
+            a = 0
+            b = len(line)
+            if r_split[0].isnumeric():
+                a = int(r_split[0]) - 1
+            if r_split[1].isnumeric():
+                b = int(r_split[1])
+            if "--complement" in options:
+                text = text.replace(line[a:b][:], '')
+            else:
+                text = text + line[a:b][:]
+        else:
+            if "--complement" in options:
+                text = text.replace(line[int(r) - 1][:], '')
+            else:
+                text = text + line[int(r) - 1][:]
+    print(text)
 
 
 # -f,-d options
-def fields_command(command, files, options, ranges, delim, output_delim):
-    for file in files:
-        lines = read_file(file)
-        if "-d" not in options and "--delimiter" not in options:
-            print('\n'.join(lines))
-        else:
-            print_lines_no_delim = False
-            printable = True
-            for line in lines:
-                if "-s" in options or "--only-delimited" in options:
-                    print_lines_no_delim = True
-                if print_lines_no_delim is True and line.find(delim) == -1:
-                    printable = False
-                if printable is True:
-                    if line.find(delim) == -1:
-                        print(line)
+def fields_command(command, lines, options, ranges, delim, output_delim):
+    if "-d" not in options and "--delimiter" not in options:
+        print('\n'.join(lines))
+    else:
+        print_lines_no_delim = False
+        printable = True
+        for line in lines:
+            if "-s" in options or "--only-delimited" in options:
+                print_lines_no_delim = True
+            if print_lines_no_delim is True and line.find(delim) == -1:
+                printable = False
+            if printable is True:
+                if line.find(delim) == -1:
+                    print(line)
+                else:
+                    line_delimited = line.split(delim)
+                    line_delimited_1 = [x + output_delim for x in line_delimited]
+                    if "--complement" in options:
+                        text = line
+                        text = text.replace(delim, output_delim)
                     else:
-                        line_delimited = line.split(delim)
-                        line_delimited_1 = [x + output_delim for x in line_delimited]
-                        if "--complement" in options:
-                            text = line
-                            text = text.replace(delim, output_delim)
-                        else:
-                            text = ""
-                        for r in ranges:
-                            if "-" in r:
-                                r_split = r.split("-")
-                                a = 0
-                                b = len(line_delimited)
-                                if r_split[0].isnumeric():
-                                    a = int(r_split[0]) - 1
-                                if r_split[1].isnumeric() and int(r_split[1].isnumeric()) < len(line_delimited):
-                                    b = int(r_split[1])
-                                if "--complement" in options:
-                                    text = text.replace("".join(line_delimited_1[a:b][:]), '')
-                                else:
-                                    text = text + output_delim.join(line_delimited[a:b][:])
+                        text = ""
+                    for r in ranges:
+                        if "-" in r:
+                            r_split = r.split("-")
+                            a = 0
+                            b = len(line_delimited)
+                            if r_split[0].isnumeric():
+                                a = int(r_split[0]) - 1
+                            if r_split[1].isnumeric() and int(r_split[1].isnumeric()) < len(line_delimited):
+                                b = int(r_split[1])
+                            if "--complement" in options:
+                                text = text.replace("".join(line_delimited_1[a:b][:]), '')
                             else:
-                                nr = int(r) - 1
-                                if nr < len(line_delimited):
-                                    if "--complement" in options:
-                                        text = text.replace("".join(line_delimited_1[nr:nr + 1][:]), '')
-                                    else:
-                                        text = text + output_delim.join(line_delimited[nr:nr + 1][:])
-                        print(text)
+                                text = text + output_delim.join(line_delimited[a:b][:])
+                        else:
+                            nr = int(r) - 1
+                            if nr < len(line_delimited):
+                                if "--complement" in options:
+                                    text = text.replace(line_delimited_1[nr][:], '')
+                                else:
+                                    text = text + line_delimited[nr][:] + output_delim
+                    if text[-1] == output_delim:
+                        text = text[:-1]
+                    print(text)
+
+
+# -f,-d options line
+def fields_command_line(command, line, options, ranges, delim, output_delim):
+    if "-d" not in options and "--delimiter" not in options:
+        print(line)
+    else:
+        print_lines_no_delim = False
+        printable = True
+        if "-s" in options or "--only-delimited" in options:
+            print_lines_no_delim = True
+        if print_lines_no_delim is True and line.find(delim) == -1:
+            printable = False
+        if printable is True:
+            if line.find(delim) == -1:
+                print(line)
+            else:
+                line_delimited = line.split(delim)
+                line_delimited_1 = [x + output_delim for x in line_delimited]
+                if "--complement" in options:
+                    text = line
+                    text = text.replace(delim, output_delim)
+                else:
+                    text = ""
+                for r in ranges:
+                    if "-" in r:
+                        r_split = r.split("-")
+                        a = 0
+                        b = len(line_delimited)
+                        if r_split[0].isnumeric():
+                            a = int(r_split[0]) - 1
+                        if r_split[1].isnumeric() and int(r_split[1].isnumeric()) < len(line_delimited):
+                            b = int(r_split[1])
+                        if "--complement" in options:
+                            text = text.replace("".join(line_delimited_1[a:b][:]), '')
+                        else:
+                            text = text + output_delim.join(line_delimited[a:b][:])
+                    else:
+                        nr = int(r) - 1
+                        if nr < len(line_delimited):
+                            if "--complement" in options:
+                                text = text.replace(line_delimited_1[nr][:], '')
+                            else:
+                                text = text + line_delimited[nr][:] + output_delim
+                if text[-1] == output_delim:
+                    text = text[:-1]
+                print(text)
 
 
 def help_command():
@@ -149,9 +238,9 @@ if com.find("-d") or com.find("--delimiter"):
         index_1 = com.find("\"", com.find("--output-delimiter"))
         output_delim = com[index_1 + 1]
 
-# print("Delimiter:")
-# print(delim)
-# print("Output delimiter:")
-# print(output_delim)
+print("Delimiter:")
+print(delim)
+print("Output delimiter:")
+print(output_delim)
 command = re.split('[ ,]', com)
 process_command(command, delim, output_delim)

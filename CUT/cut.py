@@ -1,4 +1,5 @@
 import re
+import sys
 from sys import stdin
 import os
 
@@ -16,10 +17,11 @@ more_info = "Try 'cut --help' for more information."
 def valid_option_primary_check(options):
     if len(options) == 0:
         return False
+    exist = False
     for option in options:
-        if option not in valid_options_range:
-            return False
-    return True
+        if option in valid_options_range:
+            exist = True
+    return exist
 
 
 # invalid option
@@ -259,7 +261,7 @@ def fields_command(command, lines, options, ranges, delim, output_delim):
                             if "--complement" in options:
                                 text = text.replace("".join(line_delimited_1[a:b][:]), '')
                             else:
-                                text = text + output_delim.join(line_delimited[a:b][:])
+                                text = text + output_delim.join(line_delimited[a:b][:]) + output_delim
                         else:
                             nr = int(r) - 1
                             if nr < len(line_delimited):
@@ -354,7 +356,7 @@ def version_command():
 
 
 # read the command as a string
-com = str(input())
+com = " ".join(sys.argv[1:])
 # print(com)
 
 delim = ""
@@ -362,18 +364,14 @@ output_delim = ""
 
 # if -d option is present, then we will have a delimiter
 if com.find("-d") or com.find("--delimiter"):
-    index = com.find("\"")
-    if index == -1:
-        index = com.find("\'")
-    delim = com[index + 1]
+    index = sys.argv.index('-d') + 1
+    delim = sys.argv[index]
     # output_delimiter will be the same as delimiter if the --output-delimiter is not present
     output_delim = delim
     # if --output-delimiter option is present, then we will have an output_delimiter
     if com.find("--output-delimiter") != -1:
-        index_1 = com.find("\"", com.find("--output-delimiter"))
-        if index_1 == -1:
-            index_1 = com.find("\'", com.find("--output-delimiter"))
-        output_delim = com[index_1 + 1]
+        index_1 = sys.argv.index('--output-delimiter') + 1
+        output_delim = sys.argv[index_1]
 
 # print("Delimiter:")
 # print(delim)
@@ -382,6 +380,6 @@ if com.find("-d") or com.find("--delimiter"):
 
 # split the initial command string in substrings
 command = re.split(' |,|=', com)
-
+# print(command)
 # process the split command
 process_command(command, delim, output_delim)

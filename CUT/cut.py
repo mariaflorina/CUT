@@ -363,14 +363,14 @@ delim = ""
 output_delim = ""
 
 # if -d option is present, then we will have a delimiter
-if com.find("-d") or com.find("--delimiter"):
+if com.find("-d") != -1 or com.find("--delimiter") != -1:
     index = sys.argv.index('-d') + 1
     delim = sys.argv[index]
     # output_delimiter will be the same as delimiter if the --output-delimiter is not present
     output_delim = delim
     # if --output-delimiter option is present, then we will have an output_delimiter
     if com.find("--output-delimiter") != -1:
-        index_1 = sys.argv.index('--output-delimiter') + 1
+        index_1 = sys.argv.index('--output-delimiter') + 2
         output_delim = sys.argv[index_1]
 
 # print("Delimiter:")

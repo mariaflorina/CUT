@@ -66,6 +66,17 @@ def only_one_range_option(options):
     return True
 
 
+def delimiters_check(options):
+    if "-f" not in options and "--fields" not in options:
+        if "-s" in options or "--only-delimited" in options:
+            print("cut: suppressing non-delimited lines make sense only when operation with fields")
+            return False
+        if "-d" in options or "--delimiter" in options:
+            print("cut: an input delimiter may be specified only when operating with fields")
+            return False
+    return True
+
+
 # verify if the files exist
 def verify_file_exists(command, files):
     for file in files:
@@ -93,6 +104,8 @@ def validate_command(command, options, ranges, files):
     elif only_one_range_option(options) is False:
         print("cut: only one type of list may be specified")
         valid = False
+    elif delimiters_check(options) is False:
+        valid = False
     elif verify_file_exists(command, files) is not True:
         print("cut: " + verify_file_exists(command, files) + " : No such file or directory")
         valid = False
@@ -118,7 +131,7 @@ def process_command(command, delim, output_delim):
     # print(files)
     options = [opt for opt in command if len(opt) > 1 and "-" == opt[0] and (opt[1].isdigit() is False)]
     # print(options)
-    ranges = [ran for ran in command if ran not in files and any(map(str.isdigit, ran))]
+    ranges = [ran for ran in command if ran not in files and any(c.isdigit() for c in ran)]
     # print(ranges)
 
     # verify if the command is valid
@@ -147,9 +160,7 @@ def process_command(command, delim, output_delim):
             zero_terminated = False
             for line in stdin:
                 # print(len(line))
-                # end the input strings
-                if line.rstrip() == '^C':
-                    break
+
                 # verify if it's the first line and that -z is an option
                 if nr_line == 0 and "-z" in options or "--zero-terminated" in options:
                     z_command_line(command, line, options, ranges, delim, output_delim)  # -z option
@@ -223,6 +234,8 @@ def bytes_characters_command_line(command, line, options, ranges):
                 text = text.replace(line[int(r) - 1][:], '')
             else:
                 text = text + line[int(r) - 1][:]
+        if text[-1] == "\n":
+            text = text[:-1]
     print(text)
 
 

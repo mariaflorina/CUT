@@ -258,8 +258,8 @@ def fields_command(command, lines, options, ranges, delim, output_delim):
                     line_delimited = line.split(delim)
                     line_delimited_1 = [x + output_delim for x in line_delimited]
                     if "--complement" in options:
-                        text = line
-                        text = text.replace(delim, output_delim)
+                        text = line.replace(delim, output_delim)
+
                     else:
                         text = ""
                     for r in ranges:
@@ -269,7 +269,7 @@ def fields_command(command, lines, options, ranges, delim, output_delim):
                             b = len(line_delimited)
                             if r_split[0].isnumeric():
                                 a = int(r_split[0]) - 1
-                            if r_split[1].isnumeric() and int(r_split[1].isnumeric()) < len(line_delimited):
+                            if r_split[1].isnumeric() and int(r_split[1]) < b:
                                 b = int(r_split[1])
                             if "--complement" in options:
                                 text = text.replace("".join(line_delimited_1[a:b][:]), '')
@@ -329,7 +329,7 @@ def fields_command_line(command, line, options, ranges, delim, output_delim):
                                 text = text.replace(line_delimited_1[nr][:], '')
                             else:
                                 text = text + line_delimited[nr][:] + output_delim
-                if text[-1] == output_delim:
+                if text[-1] == output_delim or text[-1]=="\n":
                     text = text[:-1]
                 print(text)
 

@@ -19,7 +19,7 @@ def valid_option_primary_check(options):
         return False
     exist = False
     for option in options:
-        if option in valid_options_range:
+        if option in valid_options_range or option == '--help' or option == '--version':
             exist = True
     return exist
 
@@ -360,12 +360,14 @@ def z_command_line(command, line, options, ranges, delim, output_delim):
 def help_command():
     f = open("help.txt", "r")
     print(f.read())
+    exit()
 
 
 # --version option
 def version_command():
     f = open("version.txt", "r")
     print(f.read())
+    exit()
 
 
 # read the command as a string
